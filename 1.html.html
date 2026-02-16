@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campus Connect - Enhanced Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(120deg, #f857a6 0%, #ff5858 40%, #38f9d7 100%);
+    min-height: 100vh; margin: 0; padding: 30px 0;
+    display: flex; justify-content: center; align-items: flex-start;
+    color: #222;
+  }
+  #container {
+    width: 100%;
+    max-width: 1280px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 18px 64px #7f53ac44;
+    padding: 48px 42px 56px 42px;
+    margin: 20px 10px;
+    min-height: 820px;
+    overflow: hidden;
+  }
+  h1, h2, h3 {
+    background: linear-gradient(90deg, #43e97b, #ff5858 45%, #7f53ac 65%, #f857a6 90%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 900; letter-spacing: 0.7px; margin-top: 0;
+  }
+  h1 { font-size: 2.85rem; margin-bottom: 14px; }
+  h2 { font-size: 1.7rem; margin-bottom: 16px; }
+  h3 { font-size: 1.3rem; margin-bottom: 12px; color: #7f53ac; }
+  #login-role-box { margin-bottom: 18px; }
+  #login-role-box label { font-weight: 600; margin-right:0.5em; cursor: pointer;}
+  #dashboard-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #38f9d7; padding-bottom: 22px; margin-bottom: 14px;
+  }
+  #dashboard-header-info {
+    display: flex; align-items: flex-end; gap: 32px;
+  }
+  #student-name { font-size: 1.58rem; font-weight: 700; white-space: nowrap; }
+  .dashboard-stats {
+    background: #f5f7ff;
+    color: #43e97b;
+    padding: 10px 22px; border-radius: 16px;
+    font-weight: 600; font-size: 1.1rem; opacity: 0.95;
+    box-shadow: 0 4px 9px #43e97b22;
+    white-space: nowrap;
+  }
+  #logout-btn { padding: 14px 36px; border-radius: 21px; font-weight: 700; font-size: 1.1rem; }
+  #manager-panel { margin:30px auto 28px auto; background:#f6eefa; border-radius:20px; padding:20px 22px 30px 22px; max-width:680px; box-shadow:0 4px 20px #43e97b33; line-height:1.4; font-size:1.05rem;}
+  #dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.2fr;
+    grid-gap: 34px;
+    margin-top: 34px;
+  }
+  .main-section {
+    background: linear-gradient(120deg, #38f9d7 0%, #7f53ac 120%);
+    border-radius: 24px;
+    padding: 18px 18px 22px 18px;
+    box-shadow: 0 10px 40px #43e97b2c;
+    display: flex;
+    flex-direction: column;
+    min-height: 610px;
+  }
+  .main-section h2 {
+    color: white;
+    font-weight: 700;
+    text-shadow: 0 3px 14px #38f9d7a6;
+    margin-left: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid #fff5;
+    letter-spacing: 0.05em;
+  }
+  #search-bar {
+    margin: 18px 12px 8px 12px;
+    border-radius: 18px;
+    padding: 14px 18px;
+    border: none;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 14px #38f9d798 inset;
+    outline: none;
+  }
+  .section-scroll {
+    overflow-y: auto;
+    padding: 12px 0 6px 0;
+    margin: 0 14px;
+    flex-grow: 1;
+  }
+  ul.event-list {
+    list-style: none;
+    padding: 0 12px 0 10px;
+    margin: 0;
+  }
+  li.event-item {
+    background: linear-gradient(105deg,#fff 70%, #f0f3f7 100%);
+    margin: 18px 0;
+    padding: 24px 18px 16px 16px;
+    border-radius: 19px;
+    box-shadow: 0 2px 16px rgba(56,249,215,0.15);
+    border: 2px solid #43e97b33;
+    color: #3e3e3e;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: transform 0.18s, border-color 0.16s;
+    min-height: 112px;
+  }
+  li.event-item:hover {
+    border-color: #f857a6cc;
+    transform: scale(1.04);
+    box-shadow: 0 5px 20px #f857a699;
+    z-index: 3;
+  }
+  li.event-item img.event-thumb {
+    width: 74px;
+    height: 74px;
+    border-radius: 16px;
+    object-fit: cover;
+    margin-right: 18px;
+    box-shadow: 0 2px 8px #7f53ac33;
+  }
+  .event-meta {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .event-title {
+    font-size: 1.28rem;
+    font-weight: 700;
+    color: #7f53ac;
+  }
+  .event-date {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #38f9d7;
+    margin-right: 12px;
+  }
+  .event-location {
+    font-size: 1.01rem;
+    color: #647dee;
+  }
+  .event-desc {
+    opacity: 0.86;
+    font-size: 1rem;
+    color: #444;
+    font-weight: 400;
+    line-height: 1.22;
+  }
+  .btn-small {
+    background: #f857a6;
+    border: none;
+    padding: 11px 26px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 14px;
+    cursor: pointer;
+    color: white;
+    margin-left: 16px;
+    margin-top: 7px;
+    box-shadow: 0 2px 10px #f857a6cc;
+    transition: background 0.15s;
+  }
+  .btn-small:hover {
+    background: #43e97b;
+  }
+  .btn-small:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  /* Announcements */
+  #announcements {
+    background: #fff4ff;
+    color: #510062;
+    user-select: none;
+    border-radius: 14px;
+    padding: 15px 25px;
+    font-size: 1.02rem;
+    line-height: 1.4;
+    box-shadow: 0 3px 16px #e456e761;
+    max-height: 230px;
+    overflow-y: auto;
+    margin-left: 15px;
+  }
+  #announcements h3 {
+    color: #7f53ac;
+  }
+  #announcements ul {
+    list-style-type: disc;
+    padding-left: 1.2em;
+  }
+  /* Calendar */
+  #calendar {
+    margin-left: 15px;
+    background: #fff8ec;
+    border-radius: 14px;
+    box-shadow: 0 2px 11px #f0aa1d80;
+    padding: 18px 18px 20px 22px;
+    max-height: 430px;
+    overflow-y: auto;
+  }
+  #calendar h3 {
+    color: #9b6c1a;
+    margin-top: 0;
+  }
+  #calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 40px;
+    grid-gap: 4px;
+    user-select: none;
+    font-size: 0.87rem;
+    color: #a8771d;
+  }
+  .cal-day-label {
+    font-weight: 800;
+  }
+  .calendar-cell {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    cursor: default;
+    position: relative;
+    padding: 5px 7px 4px 9px;
+    font-weight: 600;
+    transition: background 0.28s ease;
+  }
+  .calendar-cell:hover {
+    background: #f7f1dfdd;
+    box-shadow: 0 2px 10px #d6bb62bb;
+  }
+  .date-number {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #99771a;
+  }
+  .event-title-cal {
+    font-size: 0.87rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+    padding: 2px 6px;
+    border-radius: 12px;
+    background: #f857a6cc;
+    color: white;
+    user-select: text;
+  }
+  /* Calendar cells for days outside month */
+  .calendar-cell.outside {
+    opacity: 0.19;
+  }
+  /* Resource Links */
+  #resources {
+    margin-left: 15px;
+    background: #ecfff6;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px #38e699cc;
+    padding: 22px 20px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  #resources h3 {
+    color: #238554;
+    font-weight: 700;
+  }
+  #resources ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  #resources ul li {
+    margin: 14px 0;
+    font-size: 1.07rem;
+  }
+  #resources ul li a {
+    color: #238554;
+    text-decoration: underline;
+  }
+  #resources ul li a:hover {
+    color: #38f9d7;
+  }
+  /* Profile & Feedback */
+  #profile-feedback {
+    margin-left: 15px;
+    background: #f0f8ff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px #4a90e2cc;
+    padding: 22px 20px;
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  #profile-feedback h3 {
+    color: #215aab;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  #profile-section {
+    margin-bottom: 20px;
+  }
+  label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+  }
+  #profile-section input[type=password] {
+    width: 85%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 2px solid #215aab;
+    outline: none;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 9px #215aab22 inset;
+  }
+  #profile-section button {
+    background: #2c65db;
+    color: white;
+    font-weight: 700;
+    border-radius: 16px;
+    padding: 10px 22px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #profile-section button:hover {
+    background: #1897f3;
+  }
+  #feedback-section textarea {
+    width: 100%;
+    min-height: 90px;
+    font-size: 1rem;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1.8px solid #4a90e2aa;
+    resize: vertical;
+    margin-bottom: 14px;
+  }
+  #feedback-section button {
+    background: #38f9d7;
+    color: #073637;
+    font-weight: 700;
+    border-radius: 16px;
+    padding: 10px 22px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #feedback-section button:hover {
+    background: #2bb4ae;
+  }
+  /* Toast */
+  #toast {
+    position: fixed;
+    bottom: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #647dee;
+    color: #fff;
+    padding: 18px 38px;
+    border-radius: 36px;
+    box-shadow: 0 8px 36px #7f53acbb;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+    transition: opacity 0.42s;
+    z-index: 9999;
+    font-size: 1.09rem;
+  }
+  #toast.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Scrollbar styling for event lists */
+  ul.event-list::-webkit-scrollbar {
+    width: 12px;
+  }
+  ul.event-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ul.event-list::-webkit-scrollbar-thumb {
+    background: #38f9d7a6;
+    border-radius: 20px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  /* Responsive */
+  @media(max-width: 1250px){
+    #container {max-width: 97vw;}
+  }
+  @media(max-width: 1050px) {
+    #dashboard-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      grid-gap: 22px 22px;
+    }
+    #manager-panel {
+      max-width: unset;
+    }
+    #profile-feedback {
+      max-height: none;
+    }
+  }
+  @media(max-width: 750px){
+    #dashboard-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      grid-gap: 18px;
+    }
+    #dashboard-header, #dashboard-header-info {
+      flex-direction: column;
+      gap: 6px;
+      align-items: flex-start;
+    }
+    #logout-btn {
+      padding: 10px 20px;
+      width: 100%;
+      border-radius: 18px;
+    }
+  }
+  /* Manager Edit Dialog and Event Detail Dialog styling */
+  .manager-edit-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.3);
+    border-radius: 18px;
+    padding: 24px 30px 30px 30px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 10000;
+  }
+  .edit-link {
+    color: #43e97b;
+    cursor: pointer;
+    font-weight: 700;
+    margin-left: 18px;
+    user-select: none;
+  }
+  .edit-link:hover {
+    color: #f857a6;
+  }
+</style>
+</head>
+<body>
+<div id="container">
+  <!-- Login -->
+  <div id="login-page">
+    <h1>🌈 Campus Connect</h1>
+    <form id="login-form" aria-label="Login form" autocomplete="off" novalidate>
+      <div id="login-role-box">
+        <label><input type="radio" name="loginRole" value="student" checked /> Student</label>
+        <label><input type="radio" name="loginRole" value="manager" /> Access Manager</label>
+      </div>
+      <label for="username">Username</label>
+      <input type="text" id="username" autocomplete="username" required />
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" required />
+      <button type="submit">Login</button>
+    </form>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="display:none;">
+    <div id="dashboard-header">
+      <div id="dashboard-header-info">
+        <span id="student-name"></span>
+        <span class="dashboard-stats" id="event-stats"></span>
+      </div>
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    <div id="manager-panel" style="display:none;">
+      <h3>Access Manager Control Panel</h3>
+      <p style="font-size:1.05rem;">You can edit event details. Click <b>Edit</b> to update an event.</p>
+    </div>
+
+    <input type="text" id="search-bar" placeholder="Search events by title or location..." aria-label="Search events" />
+
+    <div id="dashboard-grid">
+      <section class="main-section" aria-label="Upcoming Events Panel">
+        <h2>Upcoming Events</h2>
+        <div class="section-scroll">
+          <ul id="upcoming-events-list" class="event-list"></ul>
+        </div>
+      </section>
+
+      <section class="main-section" aria-label="Past Events Panel">
+        <h2>Past Events</h2>
+        <div class="section-scroll">
+          <ul id="past-events-list" class="event-list"></ul>
+        </div>
+      </section>
+
+      <aside>
+        <section id="announcements" tabindex="0" aria-label="College Announcements">
+          <h3>Announcements</h3>
+          <ul>
+            <li>Library hours extended during finals week (Nov 25 - Dec 5).</li>
+            <li>Winter semester registration starts Nov 1.</li>
+            <li>COVID-19 safety protocols remain in effect on campus.</li>
+            <li>Annual Sports Meet scheduled for Dec 10 - sign up now!</li>
+            <li>Visit the career fair on Nov 22 at the Main Hall.</li>
+          </ul>
+        </section>
+
+        <section id="calendar" tabindex="0" aria-label="Event Calendar">
+          <h3>Event Calendar</h3>
+          <div id="calendar-grid" role="grid" aria-readonly="true"></div>
+        </section>
+
+        <section id="resources" tabindex="0" aria-label="Campus Resources">
+          <h3>Campus Resources</h3>
+          <ul>
+            <li><a href="https://library.college.edu" target="_blank" rel="noopener">Library Catalog</a></li>
+            <li><a href="https://it-support.college.edu" target="_blank" rel="noopener">IT Support</a></li>
+            <li><a href="https://counseling.college.edu" target="_blank" rel="noopener">Student Counseling</a></li>
+            <li><a href="https://housing.college.edu" target="_blank" rel="noopener">Housing Portal</a></li>
+            <li><a href="https://campusmap.college.edu" target="_blank" rel="noopener">Campus Map</a></li>
+          </ul>
+        </section>
+
+        <section id="profile-feedback" tabindex="0" aria-label="User Profile and Feedback">
+          <h3>User Profile</h3>
+          <div id="profile-section">
+            <label for="new-password">Change Password</label>
+            <input type="password" id="new-password" placeholder="New password" autocomplete="new-password" />
+            <button id="btn-change-password">Update Password</button>
+          </div>
+          <h3>Feedback</h3>
+          <div id="feedback-section">
+            <textarea id="feedback-text" placeholder="Your feedback here..." aria-label="Feedback textarea"></textarea>
+            <button id="btn-send-feedback">Send Feedback</button>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Manager Edit Dialog -->
+  <div id="manager-edit-dialog" class="manager-edit-box" role="dialog" aria-modal="true" aria-labelledby="manager-edit-title" style="display:none;">
+    <h3 id="manager-edit-title">Edit Event</h3>
+    <form id="edit-form" autocomplete="off" novalidate>
+      <label>Title</label>
+      <input type="text" name="title" required>
+      <label>Date (YYYY-MM-DD)</label>
+      <input type="text" name="date" pattern="\\d{4}-\\d{2}-\\d{2}" placeholder="2025-10-15" required>
+      <label>Location</label>
+      <input type="text" name="location" required>
+      <label>Description</label>
+      <input type="text" name="description" required>
+      <label>Image URL</label>
+      <input type="text" name="image" required>
+      <label>Tickets</label>
+      <input type="number" name="tickets" min="0" required>
+      <div class="manager-edit-actions" style="text-align:right; margin-top: 14px;">
+        <button type="button" id="edit-cancel" style="background:#f857a6;border:none;padding:8px 18px;color:#fff;border-radius:12px;cursor:pointer;margin-right:8px;">Cancel</button>
+        <button type="submit" id="edit-save" style="background:#43e97b;border:none;padding:8px 22px;color:#fff;border-radius:12px;cursor:pointer;">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Event Detail Dialog -->
+  <div id="event-detail-dialog" class="manager-edit-box" role="dialog" aria-modal="true" aria-labelledby="event-detail-title" style="display:none;">
+    <h3 id="event-detail-title"></h3>
+    <img id="event-detail-image" src="" alt="" style="width:100%; max-height:300px; border-radius:12px; object-fit:cover; margin-bottom:12px;" />
+    <p><strong>Date:</strong> <span id="event-detail-date"></span></p>
+    <p><strong>Location:</strong> <span id="event-detail-location"></span></p>
+    <p><strong>Description:</strong> <span id="event-detail-desc"></span></p>
+    <p><strong>Tickets Available:</strong> <span id="event-detail-tickets"></span></p>
+    <div style="text-align:right;">
+      <button id="event-detail-close" style="background:#f857a6; border:none; padding:8px 18px; color:#fff; border-radius:12px; cursor:pointer; margin-right:8px;">Close</button>
+      <button id="event-detail-edit" style="background:#43e97b; border:none; padding:8px 18px; color:#fff; border-radius:12px; cursor:pointer; display:none;">Edit</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="alert" aria-live="assertive"></div>
+
+<script>
+const today = new Date('2025-10-20');
+let events = [
+  {id: 1, title: "Tech Talk: AI in Campus", date: "2025-10-15", location: "Auditorium A", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80", description: "Insightful Tech Talk about AI in campus life; experts from top universities.", tickets: 10, ratings: []},
+  {id: 2, title: "Cultural Fest", date: "2025-11-05", location: "Main Ground", image: "https://images.unsplash.com/photo-1544774474-15e7e4c3eb71?auto=format&fit=crop&w=600&q=80", description: "Music, dance, arts, and food from diverse cultures. Celebrate talent.", tickets: 25, ratings: []},
+  {id: 3, title: "Startup Pitch Day", date: "2025-12-01", location: "Innovation Center", image: "https://images.unsplash.com/photo-1532619675605-cfd70ec7de3d?auto=format&fit=crop&w=600&q=80", description: "See campus startups pitch to investors. Meet entrepreneurs and network.", tickets: 15, ratings: []},
+  {id: 4, title: "Hackathon: CodeMania", date: "2025-11-10", location: "Lab 202", image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80", description: "Show off your coding and creativity! Win prizes in this 24-hour IT hackathon.", tickets: 40, ratings: []},
+  {id: 5, title: "Literary Carnival", date: "2025-10-25", location: "Library Lawn", image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80", description: "Poetry, book readings, essay-writing for all non-IT students.", tickets: 30, ratings: []},
+  {id: 6, title: "Robotics Expo 2025", date: "2025-12-10", location: "Tech Hall", image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80", description: "See interactive robots, join workshops, and discover the future.", tickets: 50, ratings: []},
+  {id: 7, title: "Art Gala & Painting Workshop", date: "2025-11-20", location: "Art Studio", image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=600&q=80", description: "Paint, learn from artists, and showcase your work at the gala.", tickets: 20, ratings: []},
+  {id: 8, title: "Gaming Tournament", date: "2025-11-15", location: "GameZone Arena", image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=600&q=80", description: "Compete in eSports for prizes. IT and non-IT welcome!", tickets: 60, ratings: []},
+  {id: 9, title: "Health & Wellness Day", date: "2025-12-05", location: "Student Center", image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=600&q=80", description: "Yoga, nutrition, wellness workshops. Rejuvenate mind/body!", tickets: 35, ratings: []}
+];
+const loginForm = document.getElementById('login-form');
+const loginPage = document.getElementById('login-page');
+const dashboard = document.getElementById('dashboard');
+const studentNameSpan = document.getElementById('student-name');
+const eventStats = document.getElementById('event-stats');
+const logoutBtn = document.getElementById('logout-btn');
+const upcomingList = document.getElementById('upcoming-events-list');
+const pastList = document.getElementById('past-events-list');
+const managerPanel = document.getElementById('manager-panel');
+const managerEditDialog = document.getElementById('manager-edit-dialog');
+const searchBar = document.getElementById('search-bar');
+const toast = document.getElementById('toast');
+const eventDetailDialog = document.getElementById('event-detail-dialog');
+const eventDetailTitle = document.getElementById('event-detail-title');
+const eventDetailImage = document.getElementById('event-detail-image');
+const eventDetailDate = document.getElementById('event-detail-date');
+const eventDetailLocation = document.getElementById('event-detail-location');
+const eventDetailDesc = document.getElementById('event-detail-desc');
+const eventDetailTickets = document.getElementById('event-detail-tickets');
+const eventDetailClose = document.getElementById('event-detail-close');
+const eventDetailEdit = document.getElementById('event-detail-edit');
+let loggedInUser = null, userRole = "student";
+
+loginForm.addEventListener('submit', e => {
+  e.preventDefault();
+  userRole = document.querySelector('input[name="loginRole"]:checked').value;
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  let valid = false;
+  if(userRole === "manager")
+    valid = username === "accessman" && password === "admin123";
+  else
+    valid = username === "chandu" && password === "12345678";
+  if (valid) {
+    loggedInUser = username;
+    localStorage.setItem('campusConnectUser', username);
+    localStorage.setItem('campusConnectUserRole', userRole);
+    showDashboard();
+  } else {
+    alert("Invalid login!\nStudent: chandu/12345678\nAccess Manager: accessman/admin123");
+  }
+});
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('campusConnectUser');
+  localStorage.removeItem('campusConnectUserRole');
+  loggedInUser = null; userRole = "student";
+  showLoginPage();
+});
+function showLoginPage() {
+  loginPage.style.display = 'block';
+  dashboard.style.display = 'none';
+  managerPanel.style.display = 'none';
+  managerEditDialog.style.display = 'none';
+  eventDetailDialog.style.display = 'none';
+  loginForm.reset();
+  searchBar.value = '';
+}
+function showDashboard() {
+  loginPage.style.display = 'none';
+  dashboard.style.display = 'block';
+  studentNameSpan.textContent = (userRole==="manager"?"🛠️ ":"👤 ") + loggedInUser;
+  eventStats.textContent =
+    `${events.filter(e => new Date(e.date + 'T00:00:00') >= today).length} upcoming, `
+    + `${events.filter(e => new Date(e.date + 'T00:00:00') < today).length} past, `
+    + `${events.length} total events`;
+  managerPanel.style.display = (userRole==="manager" ? "block" : "none");
+  renderEventsLists();
+  renderCalendar();
+}
+function openEventDetails(event) {
+  eventDetailTitle.textContent = event.title;
+  eventDetailImage.src = event.image;
+  eventDetailImage.alt = event.title;
+  eventDetailDate.textContent = event.date;
+  eventDetailLocation.textContent = event.location;
+  eventDetailDesc.textContent = event.description;
+  eventDetailTickets.textContent = event.tickets;
+  eventDetailEdit.style.display = (userRole === 'manager') ? 'inline-block' : 'none';
+  eventDetailDialog.style.display = 'block';
+  eventDetailEdit.onclick = () => {
+    eventDetailDialog.style.display = 'none';
+    showEditEventDialog(event);
+  };
+}
+eventDetailClose.onclick = () => {
+  eventDetailDialog.style.display = 'none';
+};
+eventDetailDialog.onclick = (e) => {
+  if (e.target === eventDetailDialog) eventDetailDialog.style.display = 'none';
+};
+function renderEventsLists(filterText = ''){
+  const f = filterText.toLowerCase();
+  upcomingList.innerHTML = '';
+  pastList.innerHTML = '';
+  events.forEach(event => {
+    if(f && !(event.title.toLowerCase().includes(f) || event.location.toLowerCase().includes(f))) return;
+    let eventDateObj = new Date(event.date + 'T00:00:00');
+    const isPast = eventDateObj < today;
+    const li = document.createElement('li');
+    li.className = 'event-item';
+    li.tabIndex = 0;
+    li.setAttribute('role', 'button');
+    li.onclick = () => openEventDetails(event);
+    li.onkeypress = (e) => { if(e.key==='Enter'||e.key===' ') openEventDetails(event); };
+    const img = document.createElement('img');
+    img.src = event.image; img.alt = event.title; img.className = 'event-thumb';
+    li.appendChild(img);
+    const metaDiv = document.createElement('div'); metaDiv.className = 'event-meta';
+    metaDiv.innerHTML = `<div class="event-title">${event.title}</div>
+      <div><span class="event-date">${event.date}</span>
+      <span class="event-location">${event.location}</span></div>
+      <div class="event-desc">${event.description}</div>`;
+    const ratingContainer = document.createElement('div'); ratingContainer.className = 'rating';
+    const avg = !event.ratings.length ? 0 : event.ratings.reduce((a,b) => a+b,0)/event.ratings.length;
+    for (let i=1;i<=5;i++) {
+      const star = document.createElementNS("http://www.w3.org/2000/svg","svg");
+      star.setAttribute("viewBox","0 0 24 24"); star.setAttribute("class","star");
+      star.setAttribute("fill", i<=Math.round(avg)?'gold':'#fff3');
+      star.innerHTML='<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>';
+      ratingContainer.appendChild(star);
+    }
+    metaDiv.appendChild(ratingContainer);
+    li.appendChild(metaDiv);
+    if(userRole==="manager") {
+      const editBtn = document.createElement('span');
+      editBtn.innerText = "[Edit]";
+      editBtn.className = "edit-link";
+      editBtn.onclick = (e) => { e.stopPropagation(); showEditEventDialog(event); };
+      li.appendChild(editBtn);
+    }
+    if(isPast) pastList.appendChild(li); else upcomingList.appendChild(li);
+  });
+}
+function showEditEventDialog(event) {
+  managerEditDialog.innerHTML = `
+    <form id="edit-form">
+      <label>Title</label>
+      <input type="text" name="title" value="${event.title.replace(/"/g,'&quot;')}" required>
+      <label>Date (YYYY-MM-DD)</label>
+      <input type="text" name="date" value="${event.date}" pattern="\\d{4}-\\d{2}-\\d{2}" placeholder="YYYY-MM-DD" required>
+      <label>Location</label>
+      <input type="text" name="location" value="${event.location.replace(/"/g,'&quot;')}" required>
+      <label>Description</label>
+      <input type="text" name="description" value="${event.description.replace(/"/g,'&quot;')}" required>
+      <label>Image URL</label>
+      <input type="text" name="image" value="${event.image.replace(/"/g,'&quot;')}" required>
+      <label>Tickets</label>
+      <input type="number" name="tickets" value="${event.tickets}" min="0" required>
+      <div class="manager-edit-actions" style="text-align:right; margin-top: 12px;">
+        <button type="button" id="edit-cancel" style="background:#f857a6;">Cancel</button>
+        <button type="submit" id="edit-save" style="background:#43e97b;">Save</button>
+      </div>
+    </form>
+  `;
+  managerEditDialog.style.display = 'block';
+  document.getElementById('edit-cancel').onclick = () => { managerEditDialog.style.display = 'none'; };
+  document.getElementById('edit-form').onsubmit = function(ev){
+    ev.preventDefault();
+    event.title = this.title.value.trim();
+    event.date = this.date.value.trim();
+    event.location = this.location.value.trim();
+    event.description = this.description.value.trim();
+    event.image = this.image.value.trim();
+    event.tickets = parseInt(this.tickets.value,10);
+    managerEditDialog.style.display = 'none';
+    renderEventsLists(searchBar.value);
+    renderCalendar();
+    showToast('Event updated successfully!');
+  }
+  managerEditDialog.onclick = function(e){
+    if(e.target === managerEditDialog) managerEditDialog.style.display = 'none';
+  };
+}
+const calendarGrid = document.getElementById('calendar-grid');
+function renderCalendar() {
+  calendarGrid.innerHTML = '';
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  days.forEach(d => {
+    const dayLabel = document.createElement('div');
+    dayLabel.className = 'cal-day-label';
+    dayLabel.textContent = d;
+    calendarGrid.appendChild(dayLabel);
+  });
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startWeekDay = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+  const prevMonthLastDay = new Date(year, month, 0);
+  const daysInPrevMonth = prevMonthLastDay.getDate();
+
+  let dayCounter = 1;
+  for(let i=0; i<42; i++){
+    const cell = document.createElement('div');
+    cell.className = 'calendar-cell';
+    if(i < startWeekDay) {
+      const prevDate = daysInPrevMonth - (startWeekDay - i -1);
+      cell.classList.add('outside');
+      cell.innerHTML = `<span class="date-number">${prevDate}</span>`;
+    } else if(dayCounter > daysInMonth) {
+      cell.classList.add('outside');
+      cell.innerHTML = `<span class="date-number">${dayCounter - daysInMonth}</span>`;
+      dayCounter++;
+    } else {
+      const thisDateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(dayCounter).padStart(2,'0')}`;
+      cell.innerHTML = `<span class="date-number">${dayCounter}</span>`;
+      const dayEvents = events.filter(ev => ev.date === thisDateStr);
+      dayEvents.forEach(ev => {
+        const evDiv = document.createElement('div');
+        evDiv.className = 'event-title-cal';
+        evDiv.title = ev.title + " at " + ev.location;
+        evDiv.textContent = ev.title.length>24?ev.title.substring(0,21)+'...':ev.title;
+        cell.appendChild(evDiv);
+      });
+      dayCounter++;
+    }
+    calendarGrid.appendChild(cell);
+  }
+}
+searchBar.addEventListener('input', e => {
+  renderEventsLists(searchBar.value);
+});
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3500);
+}
+document.getElementById('btn-change-password').onclick = () => {
+  const newPassword = document.getElementById('new-password').value.trim();
+  if(newPassword.length<6){
+    alert('Password must be at least 6 characters.');
+    return;
+  }
+  document.getElementById('new-password').value = '';
+  showToast('Password updated successfully (mock).');
+};
+document.getElementById('btn-send-feedback').onclick = () => {
+  const fb = document.getElementById('feedback-text');
+  const val = fb.value.trim();
+  if(val.length===0){
+    alert('Please enter feedback before sending.');
+    return;
+  }
+  fb.value = '';
+  showToast('Thank you for your feedback!');
+};
+window.onload = () => {
+  const user = localStorage.getItem('campusConnectUser');
+  const role = localStorage.getItem('campusConnectUserRole');
+  if(user && role && ((role==="student"&&user==="chandu")||(role==="manager"&&user==="accessman"))) {
+    loggedInUser = user; userRole = role; showDashboard();
+  } else showLoginPage();
+};
+</script>
+</body>
+</html>
